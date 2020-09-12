@@ -1,6 +1,7 @@
 <template>
   <div class="countdown-box">
-    <p>距离活动结束还有 <span>{{day}}天</span><span>{{hour}}时</span><span>{{minute}}分</span><span>{{seconds}}秒</span></p>
+    <p v-if="isCountDown">距离活动结束还有 <span>{{day}}天</span><span>{{hour}}时</span><span>{{minute}}分</span><span>{{seconds}}秒</span></p>
+    <slot v-else name="content"></slot>
   </div>
 </template>
 
@@ -9,11 +10,11 @@
 export default {
   name: 'CountDown',
   props: {
-    startTime: {
+    start: {
       type: [String, Number],
       default: new Date().getTime()
     },
-    endTime: {
+    end: {
       type: [String, Number],
       default: new Date('2020-10-1 23:59:59').getTime()
     }
@@ -26,23 +27,35 @@ export default {
       minute: '',
       seconds: '',
       timer: null,
-      allSeconds: Math.floor((this.endTime - this.startTime) / 1000)
+      allSeconds: Math.floor((this.end - this.start) / 1000),
+      isCountDown: true // 是否还在倒计时
     }
   },
   beforeDestroy () {
     clearInterval(this.timer)
   },
   mounted () {
-    this.startCountDown()
+    this.handleInit()
   },
   methods: {
-    // 开始倒计时
+    // 初始化调用
+    handleInit() {
+      // 初始化处理开始和结束时间
+      this.handleCountDownTime()
+      // 开始倒计时
+      this.startCountDown()
+    },
+    handleCountDownTime() {
+      this.start = new Date(this.start).getTime()
+      this.end = new Date(this.end).getTime()
+    },
     startCountDown () {
       this.timer = setInterval(this.countDowm, 1000)
     },
     countDowm () {
       this.allSeconds--
       if (this.allSeconds === 0) {
+        this.isCountDown = false
         clearInterval(this.timer)
         return
       }

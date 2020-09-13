@@ -15,18 +15,25 @@ export default {
       default: new Date().getTime()
     },
     end: {
-      type: [String, Number]
+      type: [String, Number],
+      default: new Date().getTime()
+    },
+    handlePropFunc: {
+      type: Function,
+      default: () => {
+        return false
+      }
     }
   },
   computed: {},
   data () {
     return {
-      day: '',
-      hour: '',
-      minute: '',
-      seconds: '',
+      day: 0,
+      hour: 0,
+      minute: 0,
+      seconds: 0,
       timer: null,
-      allSeconds: null,
+      allSeconds: 0,
       isCountDown: true // 是否还在倒计时
     }
   },
@@ -34,20 +41,22 @@ export default {
     clearInterval(this.timer)
   },
   mounted () {
-    this.handleInit()
+    this.initialize()
   },
   methods: {
     // 初始化调用
-    handleInit () {
+    initialize () {
       // 初始化处理开始和结束时间
-      this.handleCountDownTime()
+      this.formatCountDownTime()
+      // 如果都是默认时间,则不进行倒计时
+      if (this.allSeconds === 0) return
       // 开始倒计时
       this.startCountDown()
     },
-    handleCountDownTime () {
+    formatCountDownTime () {
       this.start = new Date(this.start).getTime()
-      this.end = this.end && new Date(this.end).getTime()
-      this.allSeconds = this.end && Math.floor((this.end - this.start) / 1000)
+      this.end = new Date(this.end).getTime()
+      this.allSeconds = Math.floor((this.end - this.start) / 1000)
     },
     startCountDown () {
       this.timer = setInterval(this.countDowm, 1000)
@@ -57,6 +66,7 @@ export default {
       if (this.allSeconds === 0) {
         this.isCountDown = false
         clearInterval(this.timer)
+        this.handlePropFunc && this.handlePropFunc()
         return
       }
       // 将时间戳转化为时间格式

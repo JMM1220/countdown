@@ -15,8 +15,7 @@ export default {
       default: new Date().getTime()
     },
     end: {
-      type: [String, Number],
-      default: new Date('2020-10-1 23:59:59').getTime()
+      type: [String, Number]
     }
   },
   computed: {},
@@ -27,7 +26,7 @@ export default {
       minute: '',
       seconds: '',
       timer: null,
-      allSeconds: Math.floor((this.end - this.start) / 1000),
+      allSeconds: null,
       isCountDown: true // 是否还在倒计时
     }
   },
@@ -39,15 +38,16 @@ export default {
   },
   methods: {
     // 初始化调用
-    handleInit() {
+    handleInit () {
       // 初始化处理开始和结束时间
       this.handleCountDownTime()
       // 开始倒计时
       this.startCountDown()
     },
-    handleCountDownTime() {
+    handleCountDownTime () {
       this.start = new Date(this.start).getTime()
-      this.end = new Date(this.end).getTime()
+      this.end = this.end && new Date(this.end).getTime()
+      this.allSeconds = this.end && Math.floor((this.end - this.start) / 1000)
     },
     startCountDown () {
       this.timer = setInterval(this.countDowm, 1000)

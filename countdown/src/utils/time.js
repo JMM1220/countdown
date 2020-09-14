@@ -16,6 +16,19 @@ function transformTime (allSeconds) {
   return countDownConfig
 }
 
+// 获取时间
+function getTime (time) {
+  let date
+  if (!time) {
+    date = new Date().getTime()
+  } else {
+    date = new Date().getTime() + 24 * 60 * 60 * 1000 * time
+  }
+
+  return date
+}
+
 export {
-  transformTime
+  transformTime,
+  getTime
 }

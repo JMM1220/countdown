@@ -37,8 +37,9 @@ export default {
         seconds: 0
       },
       timer: null, // 定时器对象
-      allSeconds: 0, // 倒计时剩余时间，单位为秒
-      isCountDown: true // 是否继续倒计时
+      reset: 0, // 倒计时剩余时间，单位为秒
+      isCountDown: true, // 是否继续倒计时
+      count: 0 // 定时器执行的次数
     }
   },
   beforeDestroy () {
@@ -52,29 +53,38 @@ export default {
     initialize () {
       // 初始化处理开始和结束时间
       this.format()
-      // 如果都是默认时间,则不进行倒计时
-      if (this.allSeconds <= 0) return
+      // 如果都是默认时间或者结束时间小于开始时间,则不进行倒计时
+      if (this.reset <= 0) return
       // 开始倒计时
       this.begin()
     },
     format () {
       this.start = new Date(this.start).getTime()
       this.end = new Date(this.end).getTime()
-      this.allSeconds = Math.floor((this.end - this.start) / 1000)
+      this.reset = Math.floor((this.end - this.start) / 1000)
     },
     begin () {
-      this.timer = setInterval(this.countDown, 1000)
+      this.timer = setInterval(this.correct, 1000)
+    },
+    // 矫正时间
+    correct () {
+      this.count++
+      // 延迟的秒数
+      let _delay = new Date().getTime() - (this.start + (this.count * 1000))
+      let _nextTime = 1000 - _delay
+      if (_nextTime < 0) _nextTime = 0
+      setTimeout(this.countDown, _nextTime)
     },
     countDown () {
-      this.allSeconds--
-      if (this.allSeconds === 0) {
+      this.reset--
+      if (this.reset === 0) {
         this.isCountDown = false
         clearInterval(this.timer)
         this.afterCountdown && this.afterCountdown()
         return
       }
       // 将时间戳转化为时间格式
-      this.config = transformTime(this.allSeconds)
+      this.config = transformTime(this.reset)
     }
   }
 }

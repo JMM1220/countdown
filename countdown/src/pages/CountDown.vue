@@ -51,21 +51,21 @@ export default {
     // 初始化调用
     initialize () {
       // 初始化处理开始和结束时间
-      this.formatCountDownTime()
+      this.format()
       // 如果都是默认时间,则不进行倒计时
       if (this.allSeconds <= 0) return
       // 开始倒计时
-      this.startCountDown()
+      this.begin()
     },
-    formatCountDownTime () {
+    format () {
       this.start = new Date(this.start).getTime()
       this.end = new Date(this.end).getTime()
       this.allSeconds = Math.floor((this.end - this.start) / 1000)
     },
-    startCountDown () {
-      this.timer = setInterval(this.countDowm, 1000)
+    begin () {
+      this.timer = setInterval(this.countDown, 1000)
     },
-    countDowm () {
+    countDown () {
       this.allSeconds--
       if (this.allSeconds === 0) {
         this.isCountDown = false

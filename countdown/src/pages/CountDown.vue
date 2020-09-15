@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { transformTime, getTime } from '@/utils/time.js'
+import { transformTime, getTime, fetchServeTime } from '@/utils/time.js'
 
 // 开始时间，结束时间，开始倒计时，结束倒计时
 export default {
@@ -65,22 +65,13 @@ export default {
       this.reset = Math.floor((this.end - this.start) / 1000)
     },
     begin () {
-      this.timer = setInterval(this.correct, 1000)
-    },
-    // 获取服务器时间
-    fetchServeTime() {
-      $.ajax({
-        type: 'get',
-        url: '/getservertime',
-        async: false,
-        success(data) {
-          this.servertime = new Date(data).getTime()
-        }
-      })
+      this.timer = setInterval(() => {
+        this.servertime = fetchServeTime()
+        this.correct()
+      }, 1000)
     },
     // 矫正时间
-    async correct () {
-      await this.fetchServeTime()
+    correct () {
       this.count++
       // 延迟的秒数
       let _delay = this.servertime - (this.start + (this.count * 1000))

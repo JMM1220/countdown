@@ -28,7 +28,20 @@ function getTime (time) {
   return date
 }
 
+// 获取服务器时间
+function fetchServeTime () {
+  $.ajax({
+    type: 'get',
+    url: '/getservertime',
+    async: false,
+    success(data) {
+      return new Date(data).getTime()
+    }
+  })
+}
+
 export {
   transformTime,
-  getTime
+  getTime,
+  fetchServeTime
 }

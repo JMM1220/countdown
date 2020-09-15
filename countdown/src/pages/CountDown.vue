@@ -39,7 +39,8 @@ export default {
       timer: null, // 定时器对象
       reset: 0, // 倒计时剩余时间，单位为秒
       isCountDown: true, // 是否继续倒计时
-      count: 0 // 定时器执行的次数
+      count: 0, // 定时器执行的次数
+      servertime: 0 // 服务器时间
     }
   },
   beforeDestroy () {
@@ -66,11 +67,23 @@ export default {
     begin () {
       this.timer = setInterval(this.correct, 1000)
     },
+    // 获取服务器时间
+    fetchServeTime() {
+      $.ajax({
+        type: 'get',
+        url: '/getservertime',
+        async: false,
+        success(data) {
+          this.servertime = new Date(data).getTime()
+        }
+      })
+    },
     // 矫正时间
-    correct () {
+    async correct () {
+      await this.fetchServeTime()
       this.count++
       // 延迟的秒数
-      let _delay = new Date().getTime() - (this.start + (this.count * 1000))
+      let _delay = this.servertime - (this.start + (this.count * 1000))
       let _nextTime = 1000 - _delay
       if (_nextTime < 0) _nextTime = 0
       setTimeout(this.countDown, _nextTime)
